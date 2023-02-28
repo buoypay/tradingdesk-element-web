@@ -98,20 +98,21 @@ module.exports = (env, argv) => {
     const enableMinification = !devMode && !process.env.CI_PACKAGE;
 
     const development = {};
-    if (devMode) {
-        // High quality, embedded source maps for dev builds
-        development["devtool"] = "eval-source-map";
-    } else {
-        if (process.env.CI_PACKAGE) {
-            // High quality source maps in separate .map files which include the source. This doesn't bulk up the .js
-            // payload file size, which is nice for performance but also necessary to get the bundle to a small enough
-            // size that sentry will accept the upload.
-            development["devtool"] = "source-map";
-        } else {
-            // High quality source maps in separate .map files which don't include the source
-            development["devtool"] = "nosources-source-map";
-        }
-    }
+    // no source maps!
+    // if (devMode) {
+    //     // High quality, embedded source maps for dev builds
+    //     development["devtool"] = "eval-source-map";
+    // } else {
+    //     if (process.env.CI_PACKAGE) {
+    //         // High quality source maps in separate .map files which include the source. This doesn't bulk up the .js
+    //         // payload file size, which is nice for performance but also necessary to get the bundle to a small enough
+    //         // size that sentry will accept the upload.
+    //         development["devtool"] = "source-map";
+    //     } else {
+    //         // High quality source maps in separate .map files which don't include the source
+    //         development["devtool"] = "nosources-source-map";
+    //     }
+    // }
 
     // Resolve the directories for the react-sdk and js-sdk for later use. We resolve these early, so we
     // don't have to call them over and over. We also resolve to the package.json instead of the src
