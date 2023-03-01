@@ -39,12 +39,35 @@ yarn install
 yarn start
 ```
 
+## Splitting the Bundle
 
-## Building Locally
+In order to get under the 5MB limit of Salesforce static resources, we need to strategically split the bundle up
+across multiple locations. This requires a lot of hacking around, but most of the work is in theory changing
+relative paths in the complied code into absolute paths with the prefixes: `$PUBLIC_PATH/elementassets`, `$PUBLIC_PATH/elementbundle`,
+`$PUBLIC_PATH/elementmain`, `$PUBLIC_PATH/elementmain`.
+
+`$PUBLIC_PATH` is by default `http://localhost:8080/`, which makes everything work nicely with a the local webpack
+dev server, but when building for salesforce, set this to `http://localhost:9000/elementmain/`.
+
+From there, you can also replace this with a brute force find-and-replace (see how we do it for deploying on Salesforce [here](https://github.com/buoypay/tradingdesk-lwc/blob/master/scripts/rewrite_bundle_paths.js))
+
+
+## Build + Run Locally
 
 ```bash
+export SHOULD_SPLIT_BUNDLE=true
+export PUBLIC_PATH=http://localhost:9000/elementmain/
+
 yarn
 yarn build
+
+# split bundle into different paths
+just split-bundle
+
+# serve the split bundle
+just serve-split-bundle
+
+# go to http://localhost:9000/elementmain and see it working!
 ```
 
 

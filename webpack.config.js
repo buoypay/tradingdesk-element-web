@@ -32,6 +32,16 @@ if (!process.env.VERSION) {
     process.env.VERSION = "!!UNSET!!";
 }
 
+if (!process.env.PUBLIC_PATH) {
+    process.env.PUBLIC_PATH = 'http://localhost:8080/'
+}
+
+if (process.env.SHOULD_SPLIT_BUNDLE == undefined) {
+    process.env.SHOULD_SPLIT_BUNDLE = false
+}
+console.log('process.env.PUBLIC_PATH: ', process.env.PUBLIC_PATH)
+console.log('process.env.SHOULD_SPLIT_BUNDLE: ', process.env.SHOULD_SPLIT_BUNDLE)
+
 const cssThemes = {
     // CSS themes
     "theme-legacy-light": "./node_modules/matrix-react-sdk/res/themes/legacy-light/css/legacy-light.pcss",
@@ -100,21 +110,10 @@ module.exports = (env, argv) => {
     const enableMinification = !devMode && !process.env.CI_PACKAGE;
 
     const development = {};
-    // no source maps!
-    // if (devMode) {
-    //     // High quality, embedded source maps for dev builds
-    //     development["devtool"] = "eval-source-map";
-    // } else {
-    //     if (process.env.CI_PACKAGE) {
-    //         // High quality source maps in separate .map files which include the source. This doesn't bulk up the .js
-    //         // payload file size, which is nice for performance but also necessary to get the bundle to a small enough
-    //         // size that sentry will accept the upload.
-    //         development["devtool"] = "source-map";
-    //     } else {
-    //         // High quality source maps in separate .map files which don't include the source
-    //         development["devtool"] = "nosources-source-map";
-    //     }
-    // }
+    if (devMode) {
+        // High quality, embedded source maps for dev builds
+        development["devtool"] = "eval-source-map";
+    } 
 
     // Resolve the directories for the react-sdk and js-sdk for later use. We resolve these early, so we
     // don't have to call them over and over. We also resolve to the package.json instead of the src
@@ -165,11 +164,6 @@ module.exports = (env, argv) => {
                         enforce: true,
                         // Do not add `chunks: 'all'` here because you'll break the app entry point.
                     },
-                    // vendor: {
-                    //   name: "vendor123",
-                    //   test: /[\\/]node_modules[\\/]/,
-                    //   chunks: 'all'
-                    // },
                     default: {
                         reuseExistingChunk: true,
                     },
@@ -551,8 +545,8 @@ module.exports = (env, argv) => {
                                     // twice.
                                     const outputPath = getAssetOutputPath(url, resourcePath);
 
-                                    if (outputPath.indexOf('img' > -1)) {
-                                      return 'http://localhost:9000/elementmain/' + outputPath
+                                    if (process.env.SHOULD_SPLIT_BUNDLE && outputPath.indexOf('img' > -1)) {
+                                      return process.env.PUBLIC_PATH + outputPath
                                     }
 
                                     return toPublicPath(path.join("../..", outputPath));
@@ -580,12 +574,13 @@ module.exports = (env, argv) => {
                                     // twice.
                                     const outputPath = getAssetOutputPath(url, resourcePath);
                                     // override fonts to point to elementassets
-                                    if (outputPath.indexOf('fonts') > -1) {
-                                      return 'http://localhost:9000/elementassets/' + outputPath
-                                    }
-
-                                    if (outputPath.indexOf('img' > -1)) {
-                                      return 'http://localhost:9000/elementmain/' + outputPath
+                                    if (process.env.SHOULD_SPLIT_BUNDLE) {
+                                        if (outputPath.indexOf('fonts') > -1) {
+                                            return process.env.PUBLIC_PATH.replace('elementmain', 'elementassets') + outputPath
+                                        }   
+                                        if (outputPath.indexOf('img' > -1)) {
+                                            return process.env.PUBLIC_PATH + outputPath
+                                        }
                                     }
 
                                     return toPublicPath(path.join("../..", outputPath));
@@ -689,29 +684,12 @@ module.exports = (env, argv) => {
                     },
                 }),
             new webpack.EnvironmentPlugin(["VERSION"]),
-          new JsonpScriptSrcPlugin(),
-
-            // change the public path dynamically depending on the chunk
-            // new WebpackDynamicPublicPathPlugin({
-            //   externalPublicPath: "./path1",
-            //   // chunkNames: [
-            //   //   'index'
-            //   // ]
-            // }),
-            // new WebpackDynamicPublicPathPlugin({
-            //   externalPublicPath: "./path2",
-            //   chunkNames: [
-            //     'bundle'
-            //   ]
-            // }),
-
+            process.env.SHOULD_SPLIT_BUNDLE && new JsonpScriptSrcPlugin(),
         ].filter(Boolean),
 
         output: {
             path: path.join(__dirname, "webapp"),
-            // we need to be able to set this depending on the file _after_ having split up the modules...
-            // publicPath: 'https://buoypaylimited--matrix.sandbox.lightning.force.com/resource/SF_MODULE',
-            publicPath: 'http://localhost:9000/elementmain/',
+            publicPath: process.env.PUBLIC_PATH,
 
             // The generated JS (and CSS, from the extraction plugin) are put in a
             // unique subdirectory for the build. There will only be one such
