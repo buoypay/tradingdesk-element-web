@@ -23,6 +23,12 @@ split-bundle:
   rm -rf ./elementmain/bundles
   rm -rf ./elementmain/fonts
 
+  # for some reason we can't rewrite the imports for compatibility-view.css easily
+  # copy into elementmain for now
+  # create the file structure again
+  find ./elementbundle -mindepth 1 -type d | awk '{sub(/elementbundle/, "elementmain")} {print $1}' | xargs mkdir -p
+  cp ./elementbundle/bundles/*/compat*css ./elementmain/bundles/*/
+
   # we can probably saftely remove KaTeX and Twemoji
   rm -rf ./elementassets/fonts/Twemoji* ./elementassets/fonts/KaTeX*
   
