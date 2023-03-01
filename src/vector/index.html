@@ -39,7 +39,7 @@
     ">
     <% for (var i=0; i < htmlWebpackPlugin.files.css.length; i++) {
         var file = htmlWebpackPlugin.files.css[i];
-        var match = file.match(/^bundles\/.*?\/theme-(.*)\.css$/);
+        var match = file.match(/bundles\/.*?\/theme-(.*)\.css$/);
         file = file.replace('elementmain', 'elementbundle')
         if (match) {
             var title = match[1].charAt(0).toUpperCase() + match[1].slice(1);

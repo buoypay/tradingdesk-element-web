@@ -574,7 +574,7 @@ module.exports = (env, argv) => {
                                     // directory, so we adjust the final path to navigate up
                                     // twice.
                                     const outputPath = getAssetOutputPath(url, resourcePath);
-                                    console.log('font pulic path', outputPath)
+                                    // override fonts to point to elementassets
                                     if (outputPath.indexOf('fonts') > -1) {
                                       return 'http://localhost:9000/elementassets/' + outputPath
                                     }

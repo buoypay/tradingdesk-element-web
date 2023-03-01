@@ -32,6 +32,9 @@ split-bundle:
   mv ./elementmain/i18n_tmp/lang* ./elementmain/i18n/
   rm -rd ./elementmain/i18n_tmp
 
+  # temp - copy back in img to elementbundle
+  cp -R ./elementmain/img ./elementbundle/
+
 serve-split-bundle:
   #!/usr/bin/env bash
   set -euxo pipefail
