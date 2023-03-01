@@ -6,6 +6,7 @@
 /node_modules
 /packages/
 /webapp
+/webapp-split
 /.npmrc
 /*.log
 package-lock.json

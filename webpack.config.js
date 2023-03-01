@@ -10,6 +10,8 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const HtmlWebpackInjectPreload = require("@principalstudio/html-webpack-inject-preload");
 const SentryCliPlugin = require("@sentry/webpack-plugin");
 const crypto = require("crypto");
+const WebpackDynamicPublicPathPlugin = require("webpack-dynamic-public-path");
+const { JsonpScriptSrcPlugin } = require('./JsonpScriptSrcPlugin')
 
 // XXX: mangle Crypto::createHash to replace md4 with sha256, output.hashFunction is insufficient as multiple bits
 // of webpack hardcode md4. The proper fix it to upgrade to webpack 5.
@@ -163,6 +165,11 @@ module.exports = (env, argv) => {
                         enforce: true,
                         // Do not add `chunks: 'all'` here because you'll break the app entry point.
                     },
+                    // vendor: {
+                    //   name: "vendor123",
+                    //   test: /[\\/]node_modules[\\/]/,
+                    //   chunks: 'all'
+                    // },
                     default: {
                         reuseExistingChunk: true,
                     },
@@ -668,10 +675,29 @@ module.exports = (env, argv) => {
                     },
                 }),
             new webpack.EnvironmentPlugin(["VERSION"]),
+          new JsonpScriptSrcPlugin(),
+
+            // change the public path dynamically depending on the chunk
+            // new WebpackDynamicPublicPathPlugin({
+            //   externalPublicPath: "./path1",
+            //   // chunkNames: [
+            //   //   'index'
+            //   // ]
+            // }),
+            // new WebpackDynamicPublicPathPlugin({
+            //   externalPublicPath: "./path2",
+            //   chunkNames: [
+            //     'bundle'
+            //   ]
+            // }),
+
         ].filter(Boolean),
 
         output: {
             path: path.join(__dirname, "webapp"),
+            // we need to be able to set this depending on the file _after_ having split up the modules...
+            // publicPath: 'https://buoypaylimited--matrix.sandbox.lightning.force.com/resource/SF_MODULE',
+            publicPath: 'PLACEHOLDER_PUBLIC_PATH',
 
             // The generated JS (and CSS, from the extraction plugin) are put in a
             // unique subdirectory for the build. There will only be one such
