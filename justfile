@@ -19,6 +19,7 @@ split-bundle:
   # keep vendor* and init.js in elementvendor to optimize bundle sizes
   find ./elementvendor/bundles/* -mindepth 1 -maxdepth 1 -type f | sort | grep -v -E "(\/vendor*)|(\/init)" | xargs rm -rf
   rm -rf ./elementbundle/bundles/*/vendor*
+  rm -rf ./elementbundle/bundles/*/init.js
   rm -rf ./elementmain/bundles
   rm -rf ./elementmain/fonts
 
