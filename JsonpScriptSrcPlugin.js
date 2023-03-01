@@ -21,12 +21,6 @@ class JsonpScriptSrcPlugin {
     // tapable/lib/Hook.js
     // use stage 1 to ensure this executes after webpack/lib/web/JsonpMainTemplatePlugin.js
     mainTemplate.hooks.localVars.tap({ name: pluginName, stage: 1 }, (source, chunk, hash) => {
-      // not sure if it's safe to ignore this assertion... need to ignore css sources I think
-      // assert(
-      //   source.includes("function jsonpScriptSrc"),
-      //   "JsonpScriptSrcPlugin: main template bootstrap source doesn't have function jsonpScriptSrc"
-      // );
-
       const modSource = source.replace("function jsonpScriptSrc", "function webpackJsonpScriptSrc");
       return `${modSource}
 
@@ -37,7 +31,10 @@ function jsonpScriptSrc(chunkId) {
   // custom rewrites - most end up in elementbundle
   src = src.replace('elementmain', 'elementbundle')
   if (src.indexOf('vendors') > -1) {
-    src = src.replace('elementbundle', 'elementvendor')
+    src = src.replace('elementbundle', 'elementvendor');
+  }
+  if (src.indexOf('init.js') > -1) {
+    src = src.replace('elementbundle', 'elementvendor');
   }
   console.log('importing path', src);
   return (userGetScriptSrc && userGetScriptSrc(chunkId, __webpack_require__.p, src)) || src;

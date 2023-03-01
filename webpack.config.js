@@ -550,6 +550,11 @@ module.exports = (env, argv) => {
                                     // directory, so we adjust the final path to navigate up
                                     // twice.
                                     const outputPath = getAssetOutputPath(url, resourcePath);
+
+                                    if (outputPath.indexOf('img' > -1)) {
+                                      return 'http://localhost:9000/elementmain/' + outputPath
+                                    }
+
                                     return toPublicPath(path.join("../..", outputPath));
                                 },
                             },
@@ -578,6 +583,11 @@ module.exports = (env, argv) => {
                                     if (outputPath.indexOf('fonts') > -1) {
                                       return 'http://localhost:9000/elementassets/' + outputPath
                                     }
+
+                                    if (outputPath.indexOf('img' > -1)) {
+                                      return 'http://localhost:9000/elementmain/' + outputPath
+                                    }
+
                                     return toPublicPath(path.join("../..", outputPath));
                                 },
                             },

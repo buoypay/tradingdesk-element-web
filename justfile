@@ -16,24 +16,21 @@ split-bundle:
   find ./elementassets -mindepth 1 ! -regex '^./elementassets/fonts\(/.*\)?*' -delete
   find ./elementbundle -mindepth 1 ! -regex '^./elementbundle/bundles\(/.*\)?*' -delete
   find ./elementvendor -mindepth 1 ! -regex '^./elementvendor/bundles\(/.*\)?*' -delete
-  find ./elementvendor/bundles/* -mindepth 1 -maxdepth 1 -type f -not -name "vendor*" -delete
+  # keep vendor* and init.js in elementvendor to optimize bundle sizes
+  find ./elementvendor/bundles/* -mindepth 1 -maxdepth 1 -type f | sort | grep -v -E "(\/vendor*)|(\/init)" | xargs rm -rf
   rm -rf ./elementbundle/bundles/*/vendor*
   rm -rf ./elementmain/bundles
   rm -rf ./elementmain/fonts
 
   # we can probably saftely remove KaTeX and Twemoji
-  # TODO: make these external links
-  # rm -rf ./elementassets/fonts/Twemoji* ./elementassets/fonts/KaTeX*
-
-  # # keep only english languages
+  rm -rf ./elementassets/fonts/Twemoji* ./elementassets/fonts/KaTeX*
+  
+  # keep only english languages
   mv ./elementmain/i18n ./elementmain/i18n_tmp
   mkdir -p ./elementmain/i18n
   mv ./elementmain/i18n_tmp/en* ./elementmain/i18n/
   mv ./elementmain/i18n_tmp/lang* ./elementmain/i18n/
   rm -rd ./elementmain/i18n_tmp
-
-  # temp - copy back in img to elementbundle
-  cp -R ./elementmain/img ./elementbundle/
 
 serve-split-bundle:
   #!/usr/bin/env bash
