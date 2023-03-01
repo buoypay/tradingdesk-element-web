@@ -40,7 +40,7 @@
     <% for (var i=0; i < htmlWebpackPlugin.files.css.length; i++) {
         var file = htmlWebpackPlugin.files.css[i];
         var match = file.match(/^bundles\/.*?\/theme-(.*)\.css$/);
-        file = file.replace('PLACEHOLDER_PUBLIC_PATH', 'http://localhost:9000/elementbundle')
+        file = file.replace('elementmain', 'elementbundle')
         if (match) {
             var title = match[1].charAt(0).toUpperCase() + match[1].slice(1);
         %>
@@ -53,7 +53,7 @@
     <% for (var i=0; i < htmlWebpackPlugin.tags.headTags.length; i++) {
         var tag = htmlWebpackPlugin.tags.headTags[i];
         var path = tag.attributes && tag.attributes.href;
-        path = path.replace('PLACEHOLDER_PUBLIC_PATH', 'http://localhost:9000/elementassets')
+        path = path.replace('elementmain', 'elementassets')
         if (path.includes("/Inter/")) { %>
 
             <link rel="preload" as="font" href="<%= path %>" crossorigin="anonymous"/>
@@ -64,7 +64,7 @@
   <body style="height: 100%; margin: 0;">
     <noscript>Sorry, Element requires JavaScript to be enabled.</noscript> <!-- TODO: Translate this? -->
     <section id="matrixchat" style="height: 100%;" class="notranslate"></section>
-    <script src="<%= htmlWebpackPlugin.files.js.find(entry => entry.includes("bundle.js")).replace('PLACEHOLDER_PUBLIC_PATH', 'http://localhost:9000/elementbundle') %>"></script>
+    <script src="<%= htmlWebpackPlugin.files.js.find(entry => entry.includes("bundle.js")).replace('elementmain', 'elementbundle') %>"></script>
 
     <!-- Legacy supporting Prefetch images -->
     <img src="<%= require('matrix-react-sdk/res/img/warning.svg').default %>" aria-hidden alt="" width="24" height="23" style="visibility: hidden; position: absolute; top: 0px; left: 0px;"/>

@@ -33,8 +33,9 @@ class JsonpScriptSrcPlugin {
 var userGetScriptSrc = window.__webpack_get_script_src__;
 function jsonpScriptSrc(chunkId) {
   var src = webpackJsonpScriptSrc(chunkId)
+  console.log('original path', src)
   // custom rewrites - most end up in elementbundle
-  src = src.replace('PLACEHOLDER_PUBLIC_PATH', 'http://localhost:9000/elementbundle/')
+  src = src.replace('elementmain', 'elementbundle')
   if (src.indexOf('vendors') > -1) {
     src = src.replace('elementbundle', 'elementvendor')
   }

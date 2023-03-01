@@ -574,6 +574,10 @@ module.exports = (env, argv) => {
                                     // directory, so we adjust the final path to navigate up
                                     // twice.
                                     const outputPath = getAssetOutputPath(url, resourcePath);
+                                    console.log('font pulic path', outputPath)
+                                    if (outputPath.indexOf('fonts') > -1) {
+                                      return 'http://localhost:9000/elementassets/' + outputPath
+                                    }
                                     return toPublicPath(path.join("../..", outputPath));
                                 },
                             },
@@ -697,7 +701,7 @@ module.exports = (env, argv) => {
             path: path.join(__dirname, "webapp"),
             // we need to be able to set this depending on the file _after_ having split up the modules...
             // publicPath: 'https://buoypaylimited--matrix.sandbox.lightning.force.com/resource/SF_MODULE',
-            publicPath: 'PLACEHOLDER_PUBLIC_PATH',
+            publicPath: 'http://localhost:9000/elementmain/',
 
             // The generated JS (and CSS, from the extraction plugin) are put in a
             // unique subdirectory for the build. There will only be one such

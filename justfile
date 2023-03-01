@@ -22,7 +22,8 @@ split-bundle:
   rm -rf ./elementmain/fonts
 
   # we can probably saftely remove KaTeX and Twemoji
-  rm -rf ./elementassets/fonts/Twemoji* ./elementassets/fonts/KaTeX*
+  # TODO: make these external links
+  # rm -rf ./elementassets/fonts/Twemoji* ./elementassets/fonts/KaTeX*
 
   # # keep only english languages
   mv ./elementmain/i18n ./elementmain/i18n_tmp
