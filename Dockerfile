@@ -14,6 +14,13 @@ RUN apt-get update && apt-get install -y git dos2unix
 WORKDIR /src
 
 COPY . /src
+
+# Copy over dependency repos - these are stored in private git repos
+# so I don't want the hassle and security risk of putting in ssh private keys
+# into this image
+COPY ./tmp/react-sdk /src/react-sdk
+COPY ./tmp/js-sdk /src/js-sdk
+
 RUN dos2unix /src/scripts/docker-link-repos.sh && bash /src/scripts/docker-link-repos.sh
 RUN yarn --network-timeout=100000 install
 

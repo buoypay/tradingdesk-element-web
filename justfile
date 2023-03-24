@@ -1,3 +1,5 @@
+export VERSION := "1.11.27-gtxn"
+
 split-bundle:
   #!/usr/bin/env bash
   set -euxo pipefail
@@ -46,8 +48,28 @@ serve-split-bundle:
   python3 -m http.server 9000
 
 
-server-orig-bundle:
+serve-orig-bundle:
   cd webapp; python3 -m http.server 9000
 
 rewrite-routes:
   ./scripts/rewrite_bundle_paths.js
+
+
+docker-prepare:
+  # copy in js-sdk and react-sdk to this context
+  rm -rf ./tmp
+  mkdir -p tmp
+  cp -R ../tradingdesk-matrix-js-sdk ./tmp/js-sdk 
+  cp -R ../tradingdesk-matrix-react-sdk ./tmp/react-sdk
+  rm -rf ./tmp/js-sdk/node_modules
+  rm -rf ./tmp/react-sdk/node_modules
+
+docker-build:
+  docker build . --platform linux/amd64 -t element-web:local \
+    --build-arg USE_CUSTOM_SDKS=true
+  rm -rf ./tmp
+
+docker-publish:
+  @echo "Tagging local with version: ${VERSION}"
+  docker tag element-web:local europe-west3-docker.pkg.dev/buoy-money/gtxn-docker-repo/element-web:v${VERSION}
+  docker push europe-west3-docker.pkg.dev/buoy-money/gtxn-docker-repo/element-web:v${VERSION}

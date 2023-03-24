@@ -28,3 +28,5 @@ electron/pub
 # Auto-generated file
 /src/modules.ts
 /build_config.yaml
+
+/tmp

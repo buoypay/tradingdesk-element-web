@@ -55,6 +55,7 @@ From there, you can also replace this with a brute force find-and-replace (see h
 ## Build + Run Locally
 
 ```bash
+# with split bundle
 export SHOULD_SPLIT_BUNDLE=true
 export PUBLIC_PATH=http://localhost:9000/elementmain/
 
@@ -68,6 +69,14 @@ just split-bundle
 just serve-split-bundle
 
 # go to http://localhost:9000/elementmain and see it working!
+
+
+# without split bundle
+export SHOULD_SPLIT_BUNDLE=false
+
+yarn build
+just serve-orig-bundle
+
 ```
 
 

@@ -32,15 +32,24 @@ if (!process.env.VERSION) {
     process.env.VERSION = "!!UNSET!!";
 }
 
-if (!process.env.PUBLIC_PATH) {
-    process.env.PUBLIC_PATH = 'http://localhost:8080/'
+let SHOULD_SPLIT_BUNDLE = false
+let PUBLIC_PATH = undefined
+
+if (process.env.SHOULD_SPLIT_BUNDLE === 'true') {
+    SHOULD_SPLIT_BUNDLE = true
 }
 
-if (process.env.SHOULD_SPLIT_BUNDLE == undefined) {
-    process.env.SHOULD_SPLIT_BUNDLE = false
+// only set the default PUBLIC_PATH if we are splitting the bundle
+// otherwise, routes will break
+if (SHOULD_SPLIT_BUNDLE) {
+    if (process.env.PUBLIC_PATH === '' || process.env.PUBLIC_PATH === undefined) {
+        PUBLIC_PATH = 'http://localhost:8080/'
+    } else {
+        PUBLIC_PATH = process.env.PUBLIC_PATH
+    }
 }
-console.log('process.env.PUBLIC_PATH: ', process.env.PUBLIC_PATH)
-console.log('process.env.SHOULD_SPLIT_BUNDLE: ', process.env.SHOULD_SPLIT_BUNDLE)
+console.log('SHOULD_SPLIT_BUNDLE: ', SHOULD_SPLIT_BUNDLE)
+console.log('PUBLIC_PATH: ', PUBLIC_PATH)
 
 const cssThemes = {
     // CSS themes
@@ -545,8 +554,9 @@ module.exports = (env, argv) => {
                                     // twice.
                                     const outputPath = getAssetOutputPath(url, resourcePath);
 
-                                    if (process.env.SHOULD_SPLIT_BUNDLE && outputPath.indexOf('img' > -1)) {
-                                      return process.env.PUBLIC_PATH + outputPath
+                                    // TODO: issue could be here!
+                                    if (SHOULD_SPLIT_BUNDLE && outputPath.indexOf('img' > -1)) {
+                                      return PUBLIC_PATH + outputPath
                                     }
 
                                     return toPublicPath(path.join("../..", outputPath));
@@ -574,12 +584,12 @@ module.exports = (env, argv) => {
                                     // twice.
                                     const outputPath = getAssetOutputPath(url, resourcePath);
                                     // override fonts to point to elementassets
-                                    if (process.env.SHOULD_SPLIT_BUNDLE) {
+                                    if (SHOULD_SPLIT_BUNDLE) {
                                         if (outputPath.indexOf('fonts') > -1) {
-                                            return process.env.PUBLIC_PATH.replace('elementmain', 'elementassets') + outputPath
+                                            return PUBLIC_PATH.replace('elementmain', 'elementassets') + outputPath
                                         }   
                                         if (outputPath.indexOf('img' > -1)) {
-                                            return process.env.PUBLIC_PATH + outputPath
+                                            return PUBLIC_PATH + outputPath
                                         }
                                     }
 
@@ -684,12 +694,13 @@ module.exports = (env, argv) => {
                     },
                 }),
             new webpack.EnvironmentPlugin(["VERSION"]),
-            process.env.SHOULD_SPLIT_BUNDLE && new JsonpScriptSrcPlugin(),
+            SHOULD_SPLIT_BUNDLE && new JsonpScriptSrcPlugin(),
         ].filter(Boolean),
 
         output: {
             path: path.join(__dirname, "webapp"),
-            publicPath: process.env.PUBLIC_PATH,
+            // If this is undefined, that's fine!
+            publicPath: PUBLIC_PATH,
 
             // The generated JS (and CSS, from the extraction plugin) are put in a
             // unique subdirectory for the build. There will only be one such
