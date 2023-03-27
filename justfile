@@ -1,4 +1,4 @@
-export VERSION := "1.11.27-gtxn"
+export VERSION := "1.11.28-gtxn"
 
 split-bundle:
   #!/usr/bin/env bash
